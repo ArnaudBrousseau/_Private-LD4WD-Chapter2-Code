@@ -25,10 +25,10 @@ SemanticDealer.prototype.getArtists = function(trackId){
 	this.dataFetcher.start();
 }
 
-SemanticDealer.prototype.getRelatedArtists = function(artistName){
-	console.log('Will now retrieve the related artists');
-	var safeArtistName = artistName.replace(/\s/g, "+"); //replace the spaces with '+'
-	var source = 'http://ws.audioscrobbler.com/2.0/?method=artist.getsimilar&artist=' + safeArtistName + '&api_key=b25b959554ed76058ac220b7b2e0a026';
+SemanticDealer.prototype.getRelatedArtists = function(artistId){
+	console.log('Will now retrieve the related artists to the artist #' + artistId);
+	//var safeArtistName = artistName.replace(/\s/g, "+"); //replace the spaces with '+'
+	var source = 'http://ws.audioscrobbler.com/2.0/?method=artist.getsimilar&mbid=' + artistId + '&api_key=b25b959554ed76058ac220b7b2e0a026';
 	var requestId = this.dataFetcher.addToQueue(source, 'xml', ['query','results','lfm','similarartists','artist'], 'related artists')
 }
 
@@ -40,12 +40,12 @@ SemanticDealer.prototype.handleData = function(requestId){
 		$('body').trigger('loading', [this.treeBuilder.progress, this.treeBuilder.activity]);
 		this.nextStep();
 	}
-	else if(this.treeBuilder.artist.related && this.treeBuilder.artist.name){
+	else if(this.treeBuilder.artist.related && this.treeBuilder.artist.id){
 		console.log('Will trigger artistArrived');
 		$('body').trigger('artistsArrived', this.treeBuilder.artist);
 	}
-	else if(this.treeBuilder.artist.name){
-		this.getRelatedArtists(this.treeBuilder.artist.name);
+	else if(this.treeBuilder.artist.id){
+		this.getRelatedArtists(this.treeBuilder.artist.id);
 	} else {
 		$('body').trigger('upToDate');
 	}
