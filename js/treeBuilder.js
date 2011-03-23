@@ -17,6 +17,10 @@ TreeBuilder.prototype.start = function(startUrl){
 	this.content[this.filmName] = requestId;
 	this.dataFetcher.start();
 }
+TreeBuilder.prototype.stop = function(){
+	this.dataFetcher.stop();
+	this.dataFetcher.clear();
+}
 
 TreeBuilder.prototype.integrate = function(requestId){
 	var result = this.retrieve(requestId);
@@ -35,18 +39,27 @@ TreeBuilder.prototype.integrate = function(requestId){
 				
 			case 'release-group link':
 				var insertionPoint = this.findInsertionPoint(requestId);
+				var musicBrainzFound = false;
 				for(var i=0; i<result.data.length; i++){
 					if(result.data[i].text == 'MusicBrainz' ){
+						musicBrainzFound = true
 						insertionPoint[result.type] = result.data[i];
 						console.log('integrated, yay');
 					}
 				}
-				//delete the insertion point token
-				delete this.content.soundtracks.url;
 				
-				this.progress = 50;
-				this.activity = 'Searching a MusicBrainz release...';
-				
+				if(musicBrainzFound){
+					//delete the insertion point token
+					delete this.content.soundtracks.url;
+			
+					this.progress = 50;
+					this.activity = 'Searching a MusicBrainz release...';
+				} else {
+					//Throw error
+					errorMessage = '<p>Ooops! No MusicBrainz release for this soundtrack. Sorry about that, especially if that was your favorite movie.<br>';
+					errorMessage += 'Good new is you can help build a better web by contributing to MusicBrainz. Get started <a href="http://musicbrainz.org/doc/How_To_Contribute">here</a>, don\'t be shy :)</p>'
+					errorManager.print(errorMessage);
+				}
 				break;
 				
 			case 'release-group':

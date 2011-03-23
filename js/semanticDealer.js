@@ -7,9 +7,14 @@ function SemanticDealer(filmName, startUrl){
 	this.startUrl = startUrl;
 	this.dataFetcher = new DataFetcher();
 	this.treeBuilder = new TreeBuilder(filmName, this.dataFetcher);
+	this.mustStop = false;
 }
 SemanticDealer.prototype.start = function(){
 	this.treeBuilder.start(this.startUrl);
+}
+SemanticDealer.prototype.stop = function(){
+	this.treeBuilder.stop();
+	this.mustStop = true;
 }
 
 SemanticDealer.prototype.getTracks = function(){
@@ -35,6 +40,7 @@ SemanticDealer.prototype.getRelatedArtists = function(artistId){
 SemanticDealer.prototype.handleData = function(requestId){
 	//Once data is fetched, it triggers this function
 	this.treeBuilder.integrate(requestId);
+	if( this.mustStop ){ return; }
 	if(this.treeBuilder.progress != 100){
 		console.log('will procede to next step');
 		$('body').trigger('loading', [this.treeBuilder.progress, this.treeBuilder.activity]);

@@ -40,7 +40,14 @@ form{
 }
 
 .success{ color: #63C53F; }
-.error{ color: #DF4141; }
+.error{ 
+	color: #DF4141;
+	background-color: #FBD0D0;
+	width: 270px;
+	margin: auto;
+	padding: 7px;
+	border: 1px solid #923030;
+}
 .default{ color: #fff; }
 
 .waiting{

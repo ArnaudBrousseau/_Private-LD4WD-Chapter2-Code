@@ -27,16 +27,19 @@ $('#movie').focus(function(){
 	//var initialValue = $(this).val();
 	$(this).val('');
 })
+
 $('body').bind('dataFetched', function(event, requestId){
 	console.warn('dataFetched signal catched! Woohoo, my results are ready for request #' + requestId);
 	mySemanticDealer.handleData(requestId);
 })
+
 $('body').bind('loading', function(event, progress, activity){
 	//var progress = mySemanticDealer.treeBuilder.progress;
 	//var activity = mySemanticDealer.treeBuilder.activity;
 	console.warn('Interface loading, at '+ progress +'%. Current activity: '+ activity);
 	displayWaiting(progress, activity);
 })
+
 $('body').bind('upToDate', function(event){
 	console.warn('Interface up-to-date');
 	removeWaiting();
@@ -45,12 +48,14 @@ $('body').bind('upToDate', function(event){
 	var breadth = 17;
 	render(mySemanticDealer.treeBuilder.simpleTree, mySemanticDealer.filmName, breadth);
 })
+
 $('body').bind('waitingForArtists', function(event){
 	//Let's hide the div and put it in loading phase
 	$('.artists').html('').fadeOut();
   var mydiv = $('<div />').addClass('artists').html('<p style="padding-top: 140px">loading...</p>');
   $('body>span').append(mydiv).hide().fadeIn();
 })
+
 $('body').bind('artistsArrived', function(event, artist){
 	
 	var title = $('<h1 />').html(artist.name + '<a href="#" id="closeArtists">(close)</a>');
@@ -69,6 +74,13 @@ $('body').bind('artistsArrived', function(event, artist){
 	}
 	$('.artists').html('').append(title).append(paragraph).append(list);
 })
+
+$('body').bind('error', function(event, errorMessage){
+	//Let's hide the div and put it in loading phase
+  var mydiv = $('<div />').addClass('error').html(errorMessage);
+  $('body').append(mydiv);
+})
+
 /*********************************************/
 /* Different button events for the interface */
 /*********************************************/
@@ -130,6 +142,7 @@ $('#movie').autocomplete({
 		  console.log("Will now try to fetch data about " + url);
 			
 			mySemanticDealer = new SemanticDealer(name, url);
+			errorManager = new ErrorManager(mySemanticDealer);
 			displayWaiting(0, 'In the starting blocks. Ready?');
 			mySemanticDealer.start();
 			
