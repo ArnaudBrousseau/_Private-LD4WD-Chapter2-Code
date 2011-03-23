@@ -80,7 +80,7 @@ SemanticDealer.prototype.match = function(dataToMatch){
 		'^http:\/\/mb-redir\.freebaseapps\.com\/redir\/([0-9a-z-]{1,})$':
 				['http://mm.musicbrainz.org/ws/1/release-group/%%.html?type=xml&inc=releases','xml',['query','results','metadata','release-group','release-list','release'], 'release-group'],
 		'^([0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12})$':
-				['http://mm.musicbrainz.org/ws/1/release/%%?type=xml&inc=tracks','xml',['query','results','metadata','release','track-list'], 'tracks']
+				['http://mm.musicbrainz.org/ws/1/release/%%.html?type=xml&inc=tracks+artist','xml',['query','results','metadata','release','track-list'], 'tracks']
 	};
 	for (var key in semanticMatching){
 		//check Regex and make follow the right direction

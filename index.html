@@ -67,7 +67,7 @@
 
         tree.link.add(pv.Line)
             .visible(function(l){ 
-              return l.nodeName != "id" && l.nodeName != "duration"
+              return l.nodeName != "id" && l.nodeName != "duration" && l.nodeName != "artistName"
             });
         
         //Black BG for our vinyl
@@ -129,8 +129,11 @@
           .visible(function(n) n.nodeName != "id" && n.nodeName != "duration")
           .textStyle(function(n){ 
             //console.log(this.index);
-            return n.firstChild ? "#999" : "#333";
+            if(!n.parentNode){ return "#333"; }
+            if(!n.firstChild && n.nodeName != "artistName"){return "#333"; }
+            return "#999";
           });
+          //.top(function(n) n.nodeName == "artistName" ? n.y-40 : n.y);
         
         //Soundtrack image
         tree.node.add(pv.Image)

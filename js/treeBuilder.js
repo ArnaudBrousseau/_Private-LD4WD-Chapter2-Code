@@ -80,7 +80,9 @@ TreeBuilder.prototype.integrate = function(requestId){
 					result.data.track[i].duration = humanReadableDuration;
 					
 					if(result.data.track[i].artist){
+						var artistName = result.data.track[i].artist.name;
 						delete result.data.track[i].artist;
+						result.data.track[i].artistName = artistName;
 					}
 				}
 				

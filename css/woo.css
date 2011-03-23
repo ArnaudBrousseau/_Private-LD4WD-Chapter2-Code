@@ -72,7 +72,7 @@ svg{
 .artists{
 	width:290px;
 	height: 290px;
-	opacity: 0.8;
+	opacity: 0.95;
 	background-color: #333;
 	-moz-border-radius: 150px;
 	border-radius: 150px;
@@ -122,8 +122,9 @@ svg{
 	display: block;
 	right: 0;
 	height: 35px;
-	top: 2px;
+	top: -10px;
 	position: absolute;
+	border: 1px white solid;
 }
 /* Style for the releases table */
 table{
