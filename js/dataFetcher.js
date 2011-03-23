@@ -1,6 +1,6 @@
-/***********************/
-/* Nose follower class */
-/***********************/
+/**********************/
+/* Data Fetcher class */
+/**********************/
 
 function DataFetcher(){
 	//constructor here. What do we need?

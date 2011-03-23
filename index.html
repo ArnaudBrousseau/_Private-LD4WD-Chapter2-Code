@@ -109,41 +109,10 @@
           .event("click", function(n){
             this.clicked(this.index);
             var id = n.parentNode.firstChild.nodeValue; //First Child of the parent node is the MusicBrainz ID
+            mySemanticDealer.getArtists(id);
             console.log('Just clicked on ' + n.nodeValue);
-            console.log('I guess you would like to see more about' + id + '...right?!');
-      			
-      			//Let's hide the div and put it in loading phase
-      			$('.artists').html('').fadeOut();
-			      var mydiv = $('<div />').addClass('artists').html('<p style="padding-top: 140px">loading...</p>');
-			      $('body>span').append(mydiv).hide().fadeIn();
-      			
-      			var urlToQuery = 'http://mm.musicbrainz.org/ws/1/track/' + id + '?type=xml&inc=artist';
-
-      			var encodedUrl = encodeURIComponent(urlToQuery); //URLencoding is done before the parameter passing
-          	var YQLQuery = 'select%20*%20from%20xml%20where%20url%3D%22' + encodedUrl + '%22';
-          	var YQLRestQuery = 'http://query.yahooapis.com/v1/public/yql?q=' + YQLQuery + '&format=json&diagnostics=true&callback=';
-            console.log('Will fire request: '+ YQLRestQuery);
-            $.ajax({        			
-        		  url: YQLRestQuery,
-        		  dataType: 'json',
-        		  success: function(data) {
-        			  console.log(data);
-      			    try{
-      			      
-      			      //Try to get the artist's name
-    			        var artist = data.query.results.metadata.track.artist;
-    			        $('.artists').html('<h1>Artist: ' + artist.name + '</h1><p>Related Artists (credits to LastFM)</p><ul><li>Madonna</li><li>Bob Marley</li><li>Jet</li><li>Lily Wood and the Prick</li><li>The Rolling Stones</li></ul>');
-    			      } catch(e) {
-    			        //In case of error, let's blame YQL for it
-    			        $('.artists').html('YQL Error. Sorry.');
-    			        n.nodeValue = "YQL Error. Sorry."
-    			      }
-      			    
-        			  
-        			  console.log('Just changed the nodeValue to ' + n.nodeValue);
-        			  vis.render();
-        		  }
-        		});
+            console.log('I guess you would like to see more about' + id + '...right?!');        			  
+    			  vis.render();
           })
           .fillStyle(function(n) this.clicked() == this.index ? "rgba(255,94,153,1)" : this.hovered() == this.index ? "rgba(255,94,153,0.75)" : "rgba(0, 0, 255, 0.01)")
           .strokeStyle(function(n) this.hovered() == this.index ? "black" : "white")

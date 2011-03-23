@@ -1,6 +1,6 @@
-/*******************************/
-/* Setup & creation of objects */
-/*******************************/
+/*********************/
+/* Utility functions */
+/*********************/
 
 var displayWaiting = function(progress, activity){
 	$('.waiting').remove();
@@ -42,12 +42,33 @@ $('body').bind('upToDate', function(event){
 	removeWaiting();
 	mySemanticDealer.treeBuilder.computeSimpleTree();
 	
-	//var nbTracks = mySemanticDealer.treeBuilder.simpleTree.tracks.length;
-	//var breadth = Math.floor(270/nbTracks);
 	var breadth = 17;
 	render(mySemanticDealer.treeBuilder.simpleTree, mySemanticDealer.filmName, breadth);
 })
-
+$('body').bind('waitingForArtists', function(event){
+	//Let's hide the div and put it in loading phase
+	$('.artists').html('').fadeOut();
+  var mydiv = $('<div />').addClass('artists').html('<p style="padding-top: 140px">loading...</p>');
+  $('body>span').append(mydiv).hide().fadeIn();
+})
+$('body').bind('artistsArrived', function(event, artist){
+	
+	var title = $('<h1 />').html(artist.name);
+	var paragraph = $('<p />').html('Related Artists (credits to LastFM)');
+	var list = $('<ul />');
+	
+	var limit = artist.related.length;
+	if(artist.related.length > 5){ var limit = 5;}
+	console.log('limit set to' + limit);
+	var imgSrc, artistName, artistUrl; 
+	for(var i=1; i<limit; i++){
+		artistName = artist.related[i].name;
+		imgSrc = artist.related[i].image[0].content;
+		artistUrl = artist.related[i].url;
+		list.append('<li><a href="http://' + artistUrl + '" title="Go to LastFM page">' + artistName + '</a><img src="' + imgSrc + '"></li>');
+	}
+	$('.artists').html('').append(title).append(paragraph).append(list);
+})
 /**********************************************/
 /* For testing purpose only -- Keep out folks */
 /**********************************************/

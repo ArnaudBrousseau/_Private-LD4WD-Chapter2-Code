@@ -9,6 +9,7 @@ function TreeBuilder(filmName, dataFetcher){
 	this.simpleTree = new Object();
 	this.progress = 0;
 	this.activity = 'Starting block';
+	this.artist = new Object();
 }
 
 TreeBuilder.prototype.start = function(startUrl){
@@ -19,10 +20,10 @@ TreeBuilder.prototype.start = function(startUrl){
 
 TreeBuilder.prototype.integrate = function(requestId){
 	var result = this.retrieve(requestId);
-	var insertionPoint = this.findInsertionPoint(requestId);
 	switch(result.type){
 			
 			case 'soundtracks':
+				var insertionPoint = this.findInsertionPoint(requestId);
 				insertionPoint[result.type] = result.data[0];
 				//delete the insertion point token
 				delete this.content[this.filmName];
@@ -33,6 +34,7 @@ TreeBuilder.prototype.integrate = function(requestId){
 				break;
 				
 			case 'release-group link':
+				var insertionPoint = this.findInsertionPoint(requestId);
 				for(var i=0; i<result.data.length; i++){
 					if(result.data[i].text == 'MusicBrainz' ){
 						insertionPoint[result.type] = result.data[i];
@@ -48,6 +50,7 @@ TreeBuilder.prototype.integrate = function(requestId){
 				break;
 				
 			case 'release-group':
+				var insertionPoint = this.findInsertionPoint(requestId);
 				if(result.data[0]){
 					//Several release-group -- e.g., Fight Club
 					delete result.data[0]['text-representation'];
@@ -67,7 +70,7 @@ TreeBuilder.prototype.integrate = function(requestId){
 				break;
 				
 			case 'tracks':
-				
+				var insertionPoint = this.findInsertionPoint(requestId);
 				//Formatting duration of songs & removing (possible) artist data
 				for(var i=0; i<result.data.track.length; i++){
 					var duration = result.data.track[i].duration;
@@ -96,9 +99,20 @@ TreeBuilder.prototype.integrate = function(requestId){
 				console.log('Just stopped the dataFetcher & semanticDealer, cause we got our tracks :)')
 				
 				break;
-				
+			
+			case 'artist':
+				//case where we want to retrieve the artist of a particular track
+				this.artist =  result.data;
+				break;
+			
+			case 'related artists':
+				//case where we want to retrieve the related artists
+				this.artist.related =  result.data;
+				break;
+
 			default:
-				console.error('type is not among the type supported!');
+				var insertionPoint = this.findInsertionPoint(requestId);
+				console.error('type is not among the type supported! You indicated the type was ' + result.type);
 				insertionPoint[requestId] = result.data;
 				insertionPoint['type'] = result.type;
 	}

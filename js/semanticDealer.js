@@ -16,12 +16,20 @@ SemanticDealer.prototype.getTracks = function(){
 	
 }
 
-SemanticDealer.prototype.getArtist = function(trackId){
-	
+SemanticDealer.prototype.getArtists = function(trackId){
+	//function to fetch the artist + related artist, via LastFM
+	console.log('hello from the getArtists method');
+	$('body').trigger('waitingForArtists');
+	var source = 'http://mm.musicbrainz.org/ws/1/track/' + trackId + '?type=xml&inc=artist';
+	var requestId = this.dataFetcher.addToQueue(source, 'xml', ['query','results','metadata','track','artist'], 'artist');
+	this.dataFetcher.start();
 }
 
-SemanticDealer.prototype.getRelatedArtists = function(artistId){
-
+SemanticDealer.prototype.getRelatedArtists = function(artistName){
+	console.log('Will now retrieve the related artists');
+	var safeArtistName = artistName.replace(/\s/g, "+"); //replace the spaces with '+'
+	var source = 'http://ws.audioscrobbler.com/2.0/?method=artist.getsimilar&artist=' + safeArtistName + '&api_key=b25b959554ed76058ac220b7b2e0a026';
+	var requestId = this.dataFetcher.addToQueue(source, 'xml', ['query','results','lfm','similarartists','artist'], 'related artists')
 }
 
 SemanticDealer.prototype.handleData = function(requestId){
@@ -32,7 +40,13 @@ SemanticDealer.prototype.handleData = function(requestId){
 		$('body').trigger('loading', [this.treeBuilder.progress, this.treeBuilder.activity]);
 		this.nextStep();
 	}
-	else{
+	else if(this.treeBuilder.artist.related && this.treeBuilder.artist.name){
+		console.log('Will trigger artistArrived');
+		$('body').trigger('artistsArrived', this.treeBuilder.artist);
+	}
+	else if(this.treeBuilder.artist.name){
+		this.getRelatedArtists(this.treeBuilder.artist.name);
+	} else {
 		$('body').trigger('upToDate');
 	}
 }

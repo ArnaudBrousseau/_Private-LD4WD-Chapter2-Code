@@ -96,8 +96,29 @@ svg{
 .artists ul{
 	padding-left: 38px;
 	color: white;
-	padding-top: 8px;
+	padding-top: 16px;
 	list-style-type: none;
+}
+.artists li{
+	height: 40px;
+	width: 170px;
+	position: relative;
+}
+.artists li a{
+	width: 130px;
+	display: block;
+	color: #fff;
+	text-decoration: underline;
+}
+.artists a:hover{
+	color: #FF5E99;
+}
+.artists li img{
+	display: block;
+	right: 0;
+	height: 35px;
+	top: 2px;
+	position: absolute;
 }
 /* Style for the releases table */
 table{
