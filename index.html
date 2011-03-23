@@ -122,16 +122,41 @@
             
         tree.label.add(pv.Label)
           .text(function(n) n.firstChild ? n.nodeName: n.nodeValue )
-          .textMargin(function(n) n.firstChild ? 3: 35 )
-          .font(function(n) n.firstChild ? "12px Arial, sans-serif": "16px Arial, sans-serif")
+          .textMargin(function(n) !n.parentNode ? 70: n.firstChild ? 3: 35)
+          .font(function(n){
+            return n.firstChild && n.parentNode ? "12px Arial, sans-serif": "16px Arial, sans-serif"
+          })
           .visible(function(n) n.nodeName != "id" && n.nodeName != "duration")
           .textStyle(function(n){ 
             //console.log(this.index);
             return n.firstChild ? "#999" : "#333";
           });
-
+        
+        //Soundtrack image
+        tree.node.add(pv.Image)
+          .url("img/soundtrack.png")
+          .left(function(n) n.x-40)
+          .width(59)
+          .top(function(n) n.y-30)
+          .height(59)
+          .visible(function(n) n.nodeName == "tracks")
+          .title("Soundtrack")
+          .fillStyle("transparent")
+          .strokeStyle("transparent");
+        
+        //Film image
+        tree.node.add(pv.Image)
+          .url("img/film.png")
+          .left(function(n) n.x-60)
+          .width(59)
+          .top(function(n) n.y-30)
+          .height(59)
+          .visible(function(n) !n.parentNode)
+          .title("Film")
+          .fillStyle("transparent")
+          .strokeStyle("transparent");
+        
         vis.render();
-
         console.log('rendering done');
 
       }
@@ -161,10 +186,11 @@
         tree.link.add(pv.Line);
 
         tree.node.add(pv.Dot).fillStyle(function(n) n.firstChild ? "#aec7e8" : "#ff7f0e" );
+        
         tree.label.add(pv.Label)
-        .text(function(n) n.firstChild ? n.nodeName: n.nodeValue )
-        .textStyle(function(n) n.firstChild ? "#999" : "#333" );
-
+          .text(function(n) n.firstChild ? n.nodeName: n.nodeValue )
+          .textStyle(function(n) n.firstChild ? "#999" : "#333" );
+        
         vis.render();
 
         console.log('rendering done');
