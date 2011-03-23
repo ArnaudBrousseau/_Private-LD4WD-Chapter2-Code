@@ -89,6 +89,11 @@ svg{
 	margin: auto;
 	padding: 24px 8px 8px 10px;
 }
+.artists h1 a{
+	color: #FF5E99;
+	font-size: 14px;
+	padding-left: 10px;
+}
 .artists p{
 	color: #666;
 	text-align: center;

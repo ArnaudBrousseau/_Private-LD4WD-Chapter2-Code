@@ -53,7 +53,7 @@ $('body').bind('waitingForArtists', function(event){
 })
 $('body').bind('artistsArrived', function(event, artist){
 	
-	var title = $('<h1 />').html(artist.name);
+	var title = $('<h1 />').html(artist.name + '<a href="#" id="closeArtists">(close)</a>');
 	var paragraph = $('<p />').html('Related Artists (credits to LastFM)');
 	var list = $('<ul />');
 	
@@ -69,9 +69,9 @@ $('body').bind('artistsArrived', function(event, artist){
 	}
 	$('.artists').html('').append(title).append(paragraph).append(list);
 })
-/**********************************************/
-/* For testing purpose only -- Keep out folks */
-/**********************************************/
+/*********************************************/
+/* Different button events for the interface */
+/*********************************************/
 
 $('#stop').click(function(){
 	mySemanticDealer.dataFetcher.stop();
@@ -87,6 +87,12 @@ $('#simpleTree').live('click',function(){
 	render(mySemanticDealer.treeBuilder.simpleTree, mySemanticDealer.filmName);
 	
 	$(this).attr('id', 'complexTree').html('Complex Tree');
+});
+$('#closeArtists').live('click',function(){
+	$('.artists').html('').fadeOut();
+	clearInterface();
+	render(mySemanticDealer.treeBuilder.simpleTree, mySemanticDealer.filmName);
+	return false;
 });
 
 /****************************/
