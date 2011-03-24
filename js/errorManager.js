@@ -9,6 +9,7 @@ function ErrorManager(semanticDealer){
 ErrorManager.prototype.print = function(errorMessage){
   this.semanticDealer.stop();
   $('.waiting').remove();
+  clearInterface();
   $('body').trigger('error', errorMessage);
 }
 

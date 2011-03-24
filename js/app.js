@@ -72,7 +72,7 @@ $('body').bind('artistsArrived', function(event, artist){
   
   var limit = artist.related.length;
   if (artist.related.length>5) { var limit = 5; }
-  console.log('limit set to' + limit);
+  
   var imgSrc, artistName, artistUrl; 
   for (var i=1; i<limit; i++) { 
     //We begin at 1 cause the first "related" artist is actually the artist...

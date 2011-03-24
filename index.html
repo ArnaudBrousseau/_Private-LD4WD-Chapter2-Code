@@ -33,15 +33,19 @@
         </li>
     </nav>
     <form class="ui-widget"> 
-      <label for="movie">Think about your favorite movie, and press "Enter": </label> 
+      <label for="movie">
+        Think about your favorite movie, and press "Enter": 
+      </label> 
       <input type="text" id="movie" /> 
     </form>
     
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.js"></script>
-    <script>window.jQuery || document.write('<script src="js/libs/jquery-1.5.1.min.js">\x3C/script>')</script>
+    <script>
+      window.jQuery 
+      || document.write('<script src="js/libs/jquery-1.5.1.min.js">\x3C/script>')
+    </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js"></script>
         
-    <script src="js/libs/objecthandler.js"></script>
     <script src="js/libs/protovis-r3.2.js"></script>
     
     <script src="js/errormanager.js"></script>
@@ -50,7 +54,8 @@
     <script src="js/treebuilder.js"></script> 
     <script src="js/app.js"></script>   
     <script type="text/javascript+protovis">
-      //For some reason, the JS can't be external. Has to do with the weird javascript+protovis type and MIME type.
+      //For some reason, the JS can't be external
+      //It has to do with the weird javascript+protovis type and MIME type.
       var render = function(data, title, breadth){
         if(!breadth){var breadth = 17;}
         
