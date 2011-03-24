@@ -5,11 +5,11 @@
 function TreeBuilder(filmName, dataFetcher){
   this.root = filmName;
   this.dataFetcher = dataFetcher;
-  this.content = new Object();
-  this.simpleTree = new Object();
+  this.content = {};
+  this.simpleTree = {};
   this.progress = 0;
   this.activity = 'Starting block';
-  this.artist = new Object();
+  this.artist = {};
 }
 
 TreeBuilder.prototype.start = function(startUrl){

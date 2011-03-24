@@ -8,7 +8,6 @@ function ErrorManager(semanticDealer){
 
 ErrorManager.prototype.print = function(errorMessage){
   this.semanticDealer.stop();
-  console.log('removing waiting bar');
   $('.waiting').remove();
   $('body').trigger('error', errorMessage);
 }
