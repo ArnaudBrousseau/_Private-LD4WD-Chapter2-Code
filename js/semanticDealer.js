@@ -64,6 +64,7 @@ SemanticDealer.prototype.handleData = function(requestId){
   } else if (this.treeBuilder.artist.related 
              && this.treeBuilder.artist.id) {
     //We have the artist ID and the related artist. We can go and display.
+    this.treeBuilder.stop()
     console.log('Will trigger artistArrived');
     $('body').trigger('artistsArrived', this.treeBuilder.artist);
   } else if (this.treeBuilder.artist.id) {
@@ -107,7 +108,7 @@ SemanticDealer.prototype.match = function(dataToMatch){
         ['http://www.freebase.com/experimental/topic/standard/en/%%',
          'jsonp', ['result','webpage'], 
          'release-group link'],
-    '^http:\/\/www\.freebase\.com\/view\/m\/([0-9a-z]{1,})$': 
+    '^http:\/\/www\.freebase\.com\/view\/m\/([0-9a-z_-]{1,})$': 
         ['http://www.freebase.com/experimental/topic/standard/m/%%',
          'jsonp', ['result','webpage'], 
          'release-group link'],

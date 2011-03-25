@@ -174,9 +174,8 @@ TreeBuilder.prototype.findInsertionPoint = function(requestId){
 }
 
 TreeBuilder.prototype.computeSimpleTree = function(){
-  this.simpleTree['tracks'] = this
-                                  .content
-                                  .soundtracks['release-group link']['release-group']
-                                  .tracks;
+  this.simpleTree['tracks'] = this.content
+      .soundtracks['release-group link']['release-group']
+      .tracks;
 }
 

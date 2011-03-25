@@ -12,4 +12,8 @@ ErrorManager.prototype.print = function(errorMessage){
   clearInterface();
   $('body').trigger('error', errorMessage);
 }
-
+ErrorManager.prototype.notice = function(noticeMessage){
+  this.semanticDealer.stop();
+  $('.waiting').remove();
+  $('body').trigger('notice', noticeMessage);
+}

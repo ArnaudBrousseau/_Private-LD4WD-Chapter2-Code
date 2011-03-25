@@ -93,10 +93,15 @@ $('body').bind('artistsArrived', function(event, artist){
 })
 
 $('body').bind('error', function(event, errorMessage){
-  //Let's hide the div and put it in loading phase
   var mydiv = $('<div />').addClass('error').html(errorMessage);
   $('body').append(mydiv);
   $('#movie').val('Wow! Error! Want to try another time?').removeAttr('disabled');
+})
+$('body').bind('notice', function(event, errorMessage){
+  $('.notice').remove();
+  var mydiv = $('<div />').addClass('notice').html(errorMessage);
+  mydiv.appendTo($('body')).hide().fadeIn(600);
+  setTimeout(function(){ $('.notice').fadeOut(2000); },3000);
 })
 
 /*****************************************************/

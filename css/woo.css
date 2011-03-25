@@ -40,18 +40,26 @@ form{
 }
 
 .success{ color: #63C53F; }
+.notice{ 
+  width: 220px;
+  position: absolute;
+  top: 60px;
+  left: 20px;
+  padding: 12px;
+  border: 2px solid #FFD324;
+  margin-bottom: 12px;
+  background-color: #FFF6BF;
+  color: #514721;
+}
 .error{ 
-  color: #DF4141;
-  background-color: #FBD0D0;
+  background-color: #FBE3E4;
   width: 270px;
   margin: auto;
-  padding: 7px;
-  border: 1px solid #923030;
+  padding: 12px;
+  border: 2px solid #FBC2C4;
   margin-bottom: 12px;
+  color: #8A1F11;
 }
-.default{ color: #fff; }
-.default{ color: #fff; }
-.default{ color: #fff; }
 .default{ color: #fff; }
 
 .waiting{
@@ -81,16 +89,16 @@ svg{
   position: relative;
 }
 .artists{
-  width:290px;
-  height: 290px;
+  width:310px;
+  height: 310px;
   opacity: 0.95;
   background-color: #333;
-  -moz-border-radius: 150px;
-  border-radius: 150px;
+  -moz-border-radius: 160px;
+  border-radius: 160px;
   border: 1px #FF5E99 solid;
   position: absolute;
-  top: 485px;
-  left: 295px;
+  top: 480px;
+  left: 280px;
 }
 .artists h1{
   font-size: 24px;

@@ -27,7 +27,9 @@ DataFetcher.prototype.addToQueue = function(source, dataType, accessPath, type){
 DataFetcher.prototype.start = function(){
   //If the start() method is invoked, let's begin to fire some request
   var self = this;
-  this.ID = setInterval(function(){ self.fireNextRequest(); }, 2000);
+  if (this.ID == 0) {
+    this.ID = setInterval(function(){ self.fireNextRequest(); }, 2000);
+  }
 }
 
 DataFetcher.prototype.fireNextRequest = function(){
@@ -42,7 +44,11 @@ DataFetcher.prototype.fireNextRequest = function(){
         errorMessage += 'Error occured when trying to retrieve a ressource of type ';
         errorMessage += nextRequest.type + ' at address ' + nextRequest.source;
         errorMessage += '</p>';
-        errorManager.print(errorMessage);
+        if (nextRequest.type == 'artist' || nextRequest.type == 'related artists') {
+          errorManager.notice(errorMessage);
+        } else {
+          errorManager.print(errorMessage);
+        }
       }, 10000);
       console.log('Just set the timeoutId #' + nextRequest.timeoutId);
       //And then, fire the request
@@ -56,7 +62,11 @@ DataFetcher.prototype.fireNextRequest = function(){
         errorMessage += 'Error occured when trying to retrieve a ressource of type ';
         errorMessage += nextRequest.type + ' at address ' + nextRequest.source;
         errorMessage += '</p>';
-        errorManager.print(errorMessage);
+        if (nextRequest.type == 'artist' || nextRequest.type == 'related artists') {
+          errorManager.notice(errorMessage);
+        } else {
+          errorManager.print(errorMessage);
+        }
       }, 10000);
       //Fire XML request
       this.fireXmlRequest(nextRequest);
@@ -70,7 +80,9 @@ DataFetcher.prototype.fireNextRequest = function(){
       errorManager.print(errorMessage);
       console.error("Fault! Datatype is not jsonp or xml!");
     }
-  }
+  } else {
+    console.log('queue is empty. Nothing to do!');
+  } 
 }
 
 DataFetcher.prototype.fireJsonpRequest = function(request){
@@ -80,8 +92,8 @@ DataFetcher.prototype.fireJsonpRequest = function(request){
     dataType: 'jsonp',
     timeout: 10000,
     success: function(data){
-      self.findAndStore(data, request.accessPath, request.id, request.type);
       clearTimeout(request.timeoutId);
+      self.findAndStore(data, request.accessPath, request.id, request.type);
       console.log('cleared the timeoutId #' + request.timeoutId);
     },
     error: function(jqXHR,msg) {
@@ -113,8 +125,8 @@ DataFetcher.prototype.fireXmlRequest = function(request){
     url: YQLRestQuery,
     dataType: 'json',
     success: function(data){
-      self.findAndStore(data, request.accessPath, request.id, request.type);
       clearTimeout(request.timeoutId);
+      self.findAndStore(data, request.accessPath, request.id, request.type);
       console.log('cleared the timeoutId #' + request.timeoutId);
     },
     error: function(jqXHR,msg) {
@@ -138,12 +150,16 @@ DataFetcher.prototype.findAndStore = function(data, accessPath, requestId, type)
       requestedData = data[this];
       data = requestedData;
     } else {
-      var errorMessage = '<p>Aouch!Error when requesting a ressource of type '
+      var errorMessage = '<p>Aouch! Error when requesting a ressource of type '
                          + type 
-                         + '<br/>Data isn\'t available as expected'
+                         + '.<br/>Data isn\'t available as expected.'
                          + '<br/><a href="">Try again</a>'
                          + ', maybe you\'ll be lucky next time :)</p>';
-      errorManager.print(errorMessage);
+      if (type == 'artist' || type == 'related artists') {
+        errorManager.notice(errorMessage);
+      } else {
+        errorManager.print(errorMessage);
+      }
       return false; //break the $.each() loop
     }
   });
@@ -166,6 +182,7 @@ DataFetcher.prototype.findAndStore = function(data, accessPath, requestId, type)
 
 DataFetcher.prototype.stop = function(){
   clearInterval(this.ID);
+  this.ID = 0;
 }
 
 DataFetcher.prototype.clear = function(){
