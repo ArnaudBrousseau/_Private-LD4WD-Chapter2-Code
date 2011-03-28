@@ -37,11 +37,13 @@ SemanticDealer.prototype.getArtists = function(trackId) {
   this.dataFetcher.start();
 }
 
-SemanticDealer.prototype.getRelatedArtists = function(artistId){
+SemanticDealer.prototype.getRelatedArtists = function(artistId) {
   console.log('Will now retrieve the related artists to the artist #' + artistId);
-  var source = 'http://ws.audioscrobbler.com/2.0/?method=artist.getsimilar&mbid=' 
+  var source = linkedDataApp.config.url.lastFmRelatedArtistsWebService
+               +'&mbid=' 
                + artistId 
-               + '&api_key=b25b959554ed76058ac220b7b2e0a026'; //CONFIG OBJECT!!!
+               + '&api_key='
+               + linkedDataApp.config.lastFmApiKey;
   var requestId = this.dataFetcher.addToQueue(
       source, 
       'xml', 

@@ -7,8 +7,7 @@ function DataFetcher() {
   this.lastRequest = new Date().getTime();
   this.queue = []; //To hold the queue of requests
   this.results = {}; //Object to hold the results of the requests 
-  //TODO ID => id
-  this.ID = 0; //id of the setInterval() loop
+  this.id = 0; //id of the setInterval() loop
 }
 
 DataFetcher.prototype.addToQueue = function(source, dataType, accessPath, type) {
@@ -30,8 +29,11 @@ DataFetcher.prototype.addToQueue = function(source, dataType, accessPath, type) 
 DataFetcher.prototype.start = function() {
   //If the start() method is invoked, let's begin to fire some request
   var self = this;
-  if (this.ID == 0) {
-    this.ID = setInterval(function() { self.fireNextRequest(); }, 2000);
+  if (this.id == 0) {
+    this.id = setInterval(function() { 
+                self.fireNextRequest(); 
+              }, 
+              linkedDataApp.config.requestTimePeriod);
   }
 }
 
@@ -48,11 +50,11 @@ DataFetcher.prototype.fireNextRequest = function() {
         errorMessage += nextRequest.type + ' at address ' + nextRequest.source;
         errorMessage += '</p>';
         if (nextRequest.type == 'artist' || nextRequest.type == 'related artists') {
-          errorManager.notice(errorMessage);
+          linkedDataApp.errorManager.notice(errorMessage);
         } else {
-          errorManager.print(errorMessage);
+          linkedDataApp.errorManager.print(errorMessage);
         }
-      }, 10000); //TODO in the configuration object
+      }, linkedDataApp.config.ajaxTimeout);
       console.log('Just set the timeoutId #' + nextRequest.timeoutId);
       //And then, fire the request
       this.fireJsonpRequest(nextRequest);
@@ -66,11 +68,11 @@ DataFetcher.prototype.fireNextRequest = function() {
         errorMessage += nextRequest.type + ' at address ' + nextRequest.source;
         errorMessage += '</p>';
         if (nextRequest.type == 'artist' || nextRequest.type == 'related artists') {
-          errorManager.notice(errorMessage);
+          linkedDataApp.errorManager.notice(errorMessage);
         } else {
-          errorManager.print(errorMessage);
+          linkedDataApp.errorManager.print(errorMessage);
         }
-      }, 10000);
+      }, linkedDataApp.config.ajaxTimeout);
       //Fire XML request
       this.fireXmlRequest(nextRequest);
       
@@ -80,7 +82,7 @@ DataFetcher.prototype.fireNextRequest = function() {
       errorMessage += 'There was an attempt to load a ressource which is';
       errorMessage += 'neither XML or JSONP. Gloups.';
       errorMessage += '</p>';
-      errorManager.print(errorMessage);
+      linkedDataApp.errorManager.print(errorMessage);
       console.error("Fault! Datatype is not jsonp or xml!");
     }
   } else {
@@ -93,7 +95,7 @@ DataFetcher.prototype.fireJsonpRequest = function(request) {
   $.ajax({
     url: request.source,
     dataType: 'jsonp',
-    timeout: 10000,
+    timeout: linkedDataApp.config.ajaxTimeout,
     success: function(data) {
       clearTimeout(request.timeoutId);
       self.findAndStore(data, request.accessPath, request.id, request.type);
@@ -105,7 +107,7 @@ DataFetcher.prototype.fireJsonpRequest = function(request) {
       errorMessage += 'Happened when requesting a ressource of type ' 
       errorMessage += request.type + ': ' + request.source;
       errorMessage += '<br/> Application responded: "' + msg + '"</p>';
-      errorManager.print(errorMessage);
+      linkedDataApp.errorManager.print(errorMessage);
       console.log(jqXHR);        
     }
   });
@@ -127,6 +129,7 @@ DataFetcher.prototype.fireXmlRequest = function(request) {
   $.ajax({
     url: YQLRestQuery,
     dataType: 'json',
+    timeout: linkedDataApp.config.ajaxTimeout,
     success: function(data){
       clearTimeout(request.timeoutId);
       self.findAndStore(data, request.accessPath, request.id, request.type);
@@ -138,7 +141,7 @@ DataFetcher.prototype.fireXmlRequest = function(request) {
       errorMessage += 'Happened when requesting a ressource of type ' 
       errorMessage += request.type + ': ' + request.source;
       errorMessage += '<br/> Application responded: "' + msg + '"</p>';
-      errorManager.print(errorMessage);
+      linkedDataApp.errorManager.print(errorMessage);
       console.log(jqXHR);        
     }
   });
@@ -159,9 +162,9 @@ DataFetcher.prototype.findAndStore = function(data, accessPath, requestId, type)
                          + '<br/><a href="">Try again</a>'
                          + ', maybe you\'ll be lucky next time :)</p>';
       if (type == 'artist' || type == 'related artists') {
-        errorManager.notice(errorMessage);
+        linkedDataApp.errorManager.notice(errorMessage);
       } else {
-        errorManager.print(errorMessage);
+        linkedDataApp.errorManager.print(errorMessage);
       }
       return false; //break the $.each() loop
     }
@@ -184,8 +187,8 @@ DataFetcher.prototype.findAndStore = function(data, accessPath, requestId, type)
 }
 
 DataFetcher.prototype.stop = function(){
-  clearInterval(this.ID);
-  this.ID = 0;
+  clearInterval(this.id);
+  this.id = 0;
 }
 
 DataFetcher.prototype.clear = function(){

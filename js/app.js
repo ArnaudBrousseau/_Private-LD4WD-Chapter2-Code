@@ -1,76 +1,82 @@
-var linkedDataApp = (function() {
+function LinkedDataApp() {
   
-  /************************************/
-  /* Declaration of important objects */
-  /************************************/
+  //Reference to important objects
+  this.dealer = {};
+  this.errorManager = {};
   
-  mySemanticDealer = {};
-  errorManager = {};
-  
-  /***********************/
-  /* Configuration object*/
-  /***********************/
-  
-  var config = {
-    'lastFmApiKey': 'b25b959554ed76058ac220b7b2e0a026',
-    'url': {
-      'freebaseSearchService': 'http://freebase.com/api/service/search?',
-      'freebaseStandard': 'http://www.freebase.com/experimental/topic/standard'
+  //Configuration object
+  this.config = {
+    requestTimePeriod: 2000,
+    ajaxTimeout: 10000,
+    lastFmApiKey: 'b25b959554ed76058ac220b7b2e0a026',
+    url: {
+      freebaseSearchService: 
+          'http://freebase.com/api/service/search?',
+      freebaseStandard: 
+          'http://www.freebase.com/experimental/topic/standard', 
+      lastFmRelatedArtistsWebService: 
+          'http://ws.audioscrobbler.com/2.0/?method=artist.getsimilar'
     }
   }
-  
-  /*********************/
-  /* Utility functions */
-  /*********************/
+}
 
-  var displayWaiting = function(progress, activity) {
-    $('.waiting').remove();
-    $('#movie').val('Loading and searching...').attr('disabled', 'disabled');
-    var progress = $('<progress />')
-                       .attr({'max': '100', 'value': progress})
-                       .html(progress + '%');
-  
-    var txt = $('<p />').html('<span>' + activity);
-    var loadingContainer = $('<div />')
-                               .addClass('waiting')
-                               .append(progress)
-                               .append(txt);
-  
-    loadingContainer.insertAfter('form');
-  }
-  var removeWaiting = function() {
-    $('.waiting').remove();
-    $('#movie')
-        .attr('placeholder', 'Finished! Want to try another time? :)')
-        .val('')
-        .removeAttr('disabled');
-  }
-  var clearInterface = function() {
-    $('body>span').remove();
-    $('.error').remove();
-  }
+LinkedDataApp.prototype.displayWaiting = function(progress, activity) {
+  $('.waiting').remove();
+  $('#movie').val('Loading and searching...').attr('disabled', 'disabled');
+  var progress = $('<progress />')
+                     .attr({'max': '100', 'value': progress})
+                     .html(progress + '%');
 
-  /****************************/
-  /* Setup of event listening */
-  /****************************/
+  var txt = $('<p />').html('<span>' + activity);
+  var loadingContainer = $('<div />')
+                             .addClass('waiting')
+                             .append(progress)
+                             .append(txt);
+
+  loadingContainer.insertAfter('form');
+}
+
+LinkedDataApp.prototype.removeWaiting = function() {
+  $('.waiting').remove();
+  $('#movie')
+      .attr('placeholder', 'Finished! Want to try another time? :)')
+      .val('')
+      .removeAttr('disabled');
+}
+
+LinkedDataApp.prototype.clearInterface = function() {
+  $('body>span').remove();
+  $('.error').remove();
+}
+
+//That reference will keep track of the app
+// e.g. when we want to listen to SVG events
+var linkedDataApp = new LinkedDataApp();
+
+
+/**************************************/
+/* Setup of event listening & binding */
+/**************************************/
+
+$(document).ready(function() {
 
   $('body').bind('dataFetched', function(event, requestId) {
     console.log('Results ready for request #' + requestId);
-    mySemanticDealer.handleData(requestId);
+    linkedDataApp.dealer.handleData(requestId);
   })
 
   $('body').bind('loading', function(event, progress, activity) {
     console.log('Progress: '+ progress +'%. Current activity: '+ activity);
-    displayWaiting(progress, activity);
+    linkedDataApp.displayWaiting(progress, activity);
   })
 
   $('body').bind('upToDate', function(event) {
     console.log('Interface up-to-date.Yay!');
-    removeWaiting();
-    mySemanticDealer.treeBuilder.computeSimpleTree();
+    linkedDataApp.removeWaiting();
+    linkedDataApp.dealer.treeBuilder.computeSimpleTree();
     var breadth = 17;
-    render(mySemanticDealer.treeBuilder.simpleTree, 
-           mySemanticDealer.filmName, 
+    linkedDataApp.render(linkedDataApp.dealer.treeBuilder.simpleTree, 
+           linkedDataApp.dealer.filmName, 
            breadth);
   })
 
@@ -84,7 +90,8 @@ var linkedDataApp = (function() {
   })
 
   $('body').bind('artistsArrived', function(event, artist) {
-    var titleContent = artist.name + '<a href="#" id="closeArtists">(close)</a>';
+    var titleContent = artist.name 
+                       + '<a href="#" id="closeArtists">(close)</a>';
     var title = $('<h1 />').html(titleContent);
     var paragraph = $('<p />').html('Related Artists (credits to LastFM)');
     var list = $('<ul />');
@@ -114,7 +121,10 @@ var linkedDataApp = (function() {
   $('body').bind('error', function(event, errorMessage) {
     var mydiv = $('<div />').addClass('error').html(errorMessage);
     $('body').append(mydiv);
-    $('#movie').val('Wow! Error! Want to try another time?').removeAttr('disabled');
+    $('#movie')
+        .val('')
+        .attr('placeholder','Wow! Error! Want to try another time?')
+        .removeAttr('disabled');
   })
   $('body').bind('notice', function(event, errorMessage) {
     $('.notice').remove();
@@ -123,28 +133,32 @@ var linkedDataApp = (function() {
     setTimeout(function(){ $('.notice').fadeOut(2000); },3000);
   })
 
-  /*****************************************************/
-  /* Different button event handlers for the interface */
-  /*****************************************************/
-
   $('#stop').click(function() {
-    mySemanticDealer.dataFetcher.stop();
+    linkedDataApp.dealer.dataFetcher.stop();
   });
+  
   $('#complexTree').live('click',function() {
-    clearInterface();  
-    renderGeneric(mySemanticDealer.treeBuilder.content, mySemanticDealer.filmName); 
+    linkedDataApp.clearInterface();  
+    linkedDataApp.renderGeneric(
+        linkedDataApp.dealer.treeBuilder.content, 
+        linkedDataApp.dealer.filmName
+    ); 
     $(this).attr('id', 'simpleTree').html('Simple Tree');
   });
-  $('#simpleTree').live('click',function() {
-    clearInterface();  
-    render(mySemanticDealer.treeBuilder.simpleTree, mySemanticDealer.filmName);
   
+  $('#simpleTree').live('click',function() {
+    linkedDataApp.clearInterface();  
+    linkedDataApp.render(
+        linkedDataApp.dealer.treeBuilder.simpleTree, 
+        linkedDataApp.dealer.filmName
+    );
     $(this).attr('id', 'complexTree').html('Complex Tree');
   });
-  $('#closeArtists').live('click',function() {
+  
+  $('#closeArtists').live('click',function(e) {
     $('.artists').html('').fadeOut();
-    clearInterface();
-    render(mySemanticDealer.treeBuilder.simpleTree, mySemanticDealer.filmName);
+    linkedDataApp.clearInterface();
+    linkedDataApp.render(linkedDataApp.dealer.treeBuilder.simpleTree, linkedDataApp.dealer.filmName);
     return false;
   });
 
@@ -157,7 +171,7 @@ var linkedDataApp = (function() {
     source: function(request, response) {
       $.ajax({
         //base URL for the Freebase API
-        url: config.url.freebaseSearchService,
+        url: linkedDataApp.config.url.freebaseSearchService,
         //We want JSON data returned
         dataType: 'jsonp',
         //We force a request stricly restricted to films
@@ -171,7 +185,7 @@ var linkedDataApp = (function() {
           response($.map(data.result, function(item) {
             return {
               label: item.name,
-              value: config.url.freebaseStandard + item.id
+              value: linkedDataApp.config.url.freebaseStandard + item.id
             }
           }));
         }
@@ -181,24 +195,20 @@ var linkedDataApp = (function() {
     select: function(event, ui) {
       //When a option of the list is selected
       if (ui.item) {
-        clearInterface();
+        linkedDataApp.clearInterface();
         var url = ui.item.value;
         var name = ui.item.label;
         console.log("You selected " + name);
         console.log("Will now try to fetch data about " + url);
       
         /* TODO: use var and global closure */
-        mySemanticDealer = new SemanticDealer(name, url);
-        errorManager = new ErrorManager(mySemanticDealer);
-        clearInterface();
-        displayWaiting(0, 'In the starting blocks. Ready?');
-        mySemanticDealer.start();
+        linkedDataApp.dealer = new SemanticDealer(name, url);
+        linkedDataApp.errorManager = new ErrorManager(linkedDataApp.dealer);
+        linkedDataApp.clearInterface();
+        linkedDataApp.displayWaiting(0, 'In the starting blocks. Ready?');
+        linkedDataApp.dealer.start();
       }
     },
   });
   
-  //Let's return those two objects for future reference
-  // e.g. when we want to pass events from SVG to our app
-  return this;
-
-})();
+});

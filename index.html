@@ -57,7 +57,7 @@
     <script type="text/javascript+protovis">
       //For some reason, the JS can't be external
       //It has to do with the weird javascript+protovis type and MIME type.
-      var render = function(data, title, breadth) {
+      LinkedDataApp.prototype.render = function(data, title, breadth) {
         if (!breadth) {var breadth = 17;}
         console.log('Data coming...');
         console.log(data);
@@ -122,9 +122,9 @@
             this.clicked(this.index);
             //First Child of the parent node is the MusicBrainz ID
             var id = n.parentNode.firstChild.nodeValue; 
-            mySemanticDealer.getArtists(id);
+            linkedDataApp.dealer.getArtists(id);
             console.log('Just clicked on ' + n.nodeValue);
-            console.log('I guess you would like to see more about' + id + '...right?!');                
+            console.log('Want to see more about' + id + '...right?!');                
             vis.render();
           })
           .fillStyle(function(n) {
@@ -196,7 +196,7 @@
 
       }
       
-      var renderGeneric = function(json, rootName, breadth){
+      LinkedDataApp.prototype.renderGeneric = function(json, rootName, breadth){
         console.log(json);
         if(!breadth){var breadth = 20;}
         

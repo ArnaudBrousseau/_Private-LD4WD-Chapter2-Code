@@ -70,7 +70,7 @@ TreeBuilder.prototype.integrate = function(requestId) {
                          + ' <a href="http://musicbrainz.org/doc/'
                          + 'How_To_Contribute">here</a>'
                          + ', don\'t be shy :)</p>';
-          errorManager.print(errorMessage);
+          linkedDataApp.errorManager.print(errorMessage);
         }
         break;
         
@@ -145,7 +145,7 @@ TreeBuilder.prototype.integrate = function(requestId) {
         var errorMessage = '<p>Ooops! Looks like the application'
                        + 'wasn\'t able to integrate the data of type '
                        + result.type;
-        errorManager.print(errorMessage);
+        linkedDataApp.errorManager.print(errorMessage);
   }
   console.log('Insertion of data done for request #' + requestId);
   return true;

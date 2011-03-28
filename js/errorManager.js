@@ -9,7 +9,7 @@ function ErrorManager(semanticDealer) {
 ErrorManager.prototype.print = function(errorMessage) {
   this.semanticDealer.stop();
   $('.waiting').remove();
-  clearInterface();
+  linkedDataApp.clearInterface();
   $('body').trigger('error', errorMessage);
 }
 ErrorManager.prototype.notice = function(noticeMessage) {
