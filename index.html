@@ -36,7 +36,7 @@
       <label for="movie">
         Think about your favorite movie, and press "Enter": 
       </label> 
-      <input type="text" id="movie" /> 
+      <input type="text" id="movie" placeholder="So?" /> 
     </form>
     
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.js"></script>
@@ -52,18 +52,22 @@
     <script src="js/semanticdealer.js"></script>
     <script src="js/datafetcher.js"></script>
     <script src="js/treebuilder.js"></script> 
-    <script src="js/app.js"></script>   
+    <script src="js/app.js"></script>
+    
     <script type="text/javascript+protovis">
       //For some reason, the JS can't be external
       //It has to do with the weird javascript+protovis type and MIME type.
-      var render = function(data, title, breadth){
-        if(!breadth){var breadth = 17;}
-        
+      var render = function(data, title, breadth) {
+        if (!breadth) {var breadth = 17;}
+        console.log('Data coming...');
+        console.log(data);
         var tracks = data.tracks;
         
+        var container = document.createElement("span");
         var vis = new pv.Panel()
             .width(1000)
-            .height(800);
+            .height(800)
+            .canvas(container);
 
         var tree = vis.add(pv.Layout.Tree).left(-400)
             .nodes(pv.dom(data).root(title).nodes())
@@ -72,8 +76,10 @@
             .orient("radial");
 
         tree.link.add(pv.Line)
-            .visible(function(l){ 
-              return l.nodeName != "id" && l.nodeName != "duration" && l.nodeName != "artistName"
+            .visible(function(l) { 
+              return (l.nodeName != "id" 
+                      && l.nodeName != "duration" 
+                      && l.nodeName != "artistName");
             });
         
         //Black BG for our vinyl
@@ -114,14 +120,29 @@
           .visible(function(n) n.nodeName == "title")
           .event("click", function(n){
             this.clicked(this.index);
-            var id = n.parentNode.firstChild.nodeValue; //First Child of the parent node is the MusicBrainz ID
+            //First Child of the parent node is the MusicBrainz ID
+            var id = n.parentNode.firstChild.nodeValue; 
             mySemanticDealer.getArtists(id);
             console.log('Just clicked on ' + n.nodeValue);
             console.log('I guess you would like to see more about' + id + '...right?!');                
             vis.render();
           })
-          .fillStyle(function(n) this.clicked() == this.index ? "rgba(255,94,153,1)" : this.hovered() == this.index ? "rgba(255,94,153,0.75)" : "rgba(0, 0, 255, 0.01)")
-          .strokeStyle(function(n) this.hovered() == this.index ? "black" : "white")
+          .fillStyle(function(n) {
+            if (this.clicked() == this.index) { 
+              return "rgba(255,94,153,1)";
+            } else if (this.hovered() == this.index) {
+              return "rgba(255,94,153,0.75)";
+            } else {
+              return "rgba(0, 0, 255, 0.01)";
+            }
+          })
+          .strokeStyle(function(n) {
+            if (this.hovered() == this.index) {
+              return "black";
+            } else {
+              return "white";
+            }
+          })
           .event("mouseover", function() this.hovered(this.index))
           .event("mouseout", function() this.hovered(-1));
             
@@ -129,8 +150,12 @@
         tree.label.add(pv.Label)
           .text(function(n) n.firstChild ? n.nodeName: n.nodeValue )
           .textMargin(function(n) !n.parentNode ? 70: n.firstChild ? 3: 35)
-          .font(function(n){
-            return n.firstChild && n.parentNode ? "12px Arial, sans-serif": "16px Arial, sans-serif"
+          .font(function(n) {
+            if (n.firstChild && n.parentNode){ 
+              return "12px Arial, sans-serif";
+            } else {
+              return "16px Arial, sans-serif";
+            }
           })
           .visible(function(n) n.nodeName != "id" && n.nodeName != "duration")
           .textStyle(function(n){ 
@@ -139,7 +164,6 @@
             if(!n.firstChild && n.nodeName != "artistName"){return "#333"; }
             return "#999";
           });
-          //.top(function(n) n.nodeName == "artistName" ? n.y-40 : n.y);
         
         //Soundtrack image
         tree.node.add(pv.Image)
@@ -167,11 +191,13 @@
         
         vis.render();
         console.log('rendering done');
+        
+        document.body.appendChild(container);
 
       }
       
       var renderGeneric = function(json, rootName, breadth){
-        
+        console.log(json);
         if(!breadth){var breadth = 20;}
         
         var svgElements = document.getElementsByTagName('svg');
@@ -182,9 +208,12 @@
           }
         }
 
+        var container = document.createElement("span");
+        
         var vis = new pv.Panel()
-            .width(960)
-            .height(800);
+            .width(1000)
+            .height(800)
+            .canvas(container);
 
         var tree = vis.add(pv.Layout.Tree).left(-250)
             .nodes(pv.dom(json).root(rootName).nodes())
@@ -194,14 +223,16 @@
 
         tree.link.add(pv.Line);
 
-        tree.node.add(pv.Dot).fillStyle(function(n) n.firstChild ? "#aec7e8" : "#ff7f0e" );
+        tree.node.add(pv.Dot)
+            .fillStyle(function(n) n.firstChild ? "#aec7e8" : "#ff7f0e" );
         
         tree.label.add(pv.Label)
           .text(function(n) n.firstChild ? n.nodeName: n.nodeValue )
           .textStyle(function(n) n.firstChild ? "#999" : "#333" );
         
         vis.render();
-
+        
+        document.body.appendChild(container);
         console.log('rendering done');
 
       }

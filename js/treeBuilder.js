@@ -2,7 +2,7 @@
 /* TreeBuilder -- let's build a tree! */
 /**************************************/
 
-function TreeBuilder(filmName, dataFetcher){
+function TreeBuilder(filmName, dataFetcher) {
   this.root = filmName;
   this.dataFetcher = dataFetcher;
   this.content = {};
@@ -12,7 +12,7 @@ function TreeBuilder(filmName, dataFetcher){
   this.artist = {};
 }
 
-TreeBuilder.prototype.start = function(startUrl){
+TreeBuilder.prototype.start = function(startUrl) {
   var requestId = this.dataFetcher.addToQueue(
       startUrl, 
       'jsonp', 
@@ -23,12 +23,12 @@ TreeBuilder.prototype.start = function(startUrl){
   this.dataFetcher.start();
 }
 
-TreeBuilder.prototype.stop = function(){
+TreeBuilder.prototype.stop = function() {
   this.dataFetcher.stop();
   this.dataFetcher.clear();
 }
 
-TreeBuilder.prototype.integrate = function(requestId){
+TreeBuilder.prototype.integrate = function(requestId) {
   var result = this.retrieve(requestId);
   switch (result.type) {
      
@@ -61,12 +61,14 @@ TreeBuilder.prototype.integrate = function(requestId){
 
         } else {
           //Throw error
-          var errorMessage = '<p>Ooops! No MusicBrainz release for this soundtrack.'
+          var errorMessage = '<p>Ooops! No MusicBrainz release '
+                         +'for this soundtrack.'
                          + 'Sorry about that, especially if that was your '
                          + 'favorite movie.<br>'
                          + 'Good news is you can help build a better web by '
                          + 'contributing to MusicBrainz. Get started'
-                         + ' <a href="http://musicbrainz.org/doc/How_To_Contribute">here</a>'
+                         + ' <a href="http://musicbrainz.org/doc/'
+                         + 'How_To_Contribute">here</a>'
                          + ', don\'t be shy :)</p>';
           errorManager.print(errorMessage);
         }
@@ -74,7 +76,7 @@ TreeBuilder.prototype.integrate = function(requestId){
         
       case 'release-group':
         var insertionPoint = this.findInsertionPoint(requestId);
-        if (result.data[0]) {
+        if (result.data[0]) { // jauery..isArray()
           //Several release-group -- e.g., Fight Club
           delete result.data[0]['text-representation'];
           insertionPoint[result.type] = result.data[0];
@@ -149,14 +151,14 @@ TreeBuilder.prototype.integrate = function(requestId){
   return true;
 }
 
-TreeBuilder.prototype.retrieve = function(requestId){
+TreeBuilder.prototype.retrieve = function(requestId) {
   console.log("retrieving result #" + requestId);
   var results = this.dataFetcher.results;
   console.log(results[requestId]);
   return results[requestId];
 }
 
-TreeBuilder.prototype.findInsertionPoint = function(requestId){
+TreeBuilder.prototype.findInsertionPoint = function(requestId) {
   var self = this;
   var insertionPoint = null;
   (function recursiveTreeLoop(obj) {
@@ -173,7 +175,7 @@ TreeBuilder.prototype.findInsertionPoint = function(requestId){
   return insertionPoint;  
 }
 
-TreeBuilder.prototype.computeSimpleTree = function(){
+TreeBuilder.prototype.computeSimpleTree = function() {
   this.simpleTree['tracks'] = this.content
       .soundtracks['release-group link']['release-group']
       .tracks;

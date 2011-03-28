@@ -2,26 +2,26 @@
 /* SemanticDealer -- let's deal with linked data and semantic */
 /**************************************************************/
 
-function SemanticDealer(filmName, startUrl){
+function SemanticDealer(filmName, startUrl) {
   this.filmName = filmName;
   this.startUrl = startUrl;
   this.dataFetcher = new DataFetcher();
   this.treeBuilder = new TreeBuilder(filmName, this.dataFetcher);
   this.mustStop = false;
 }
-SemanticDealer.prototype.start = function(){
+SemanticDealer.prototype.start = function() {
   this.treeBuilder.start(this.startUrl);
 }
-SemanticDealer.prototype.stop = function(){
+SemanticDealer.prototype.stop = function() {
   this.treeBuilder.stop();
   this.mustStop = true;
 }
 
-SemanticDealer.prototype.getTracks = function(){
+SemanticDealer.prototype.getTracks = function() {
   
 }
 
-SemanticDealer.prototype.getArtists = function(trackId){
+SemanticDealer.prototype.getArtists = function(trackId) {
   //function to fetch the artist + related artist, via LastFM
   console.log('hello from the getArtists method');
   $('body').trigger('waitingForArtists');
@@ -41,7 +41,7 @@ SemanticDealer.prototype.getRelatedArtists = function(artistId){
   console.log('Will now retrieve the related artists to the artist #' + artistId);
   var source = 'http://ws.audioscrobbler.com/2.0/?method=artist.getsimilar&mbid=' 
                + artistId 
-               + '&api_key=b25b959554ed76058ac220b7b2e0a026';
+               + '&api_key=b25b959554ed76058ac220b7b2e0a026'; //CONFIG OBJECT!!!
   var requestId = this.dataFetcher.addToQueue(
       source, 
       'xml', 
@@ -50,7 +50,7 @@ SemanticDealer.prototype.getRelatedArtists = function(artistId){
   );
 }
 
-SemanticDealer.prototype.handleData = function(requestId){
+SemanticDealer.prototype.handleData = function(requestId) {
   //Once data is fetched, it triggers this function
   this.treeBuilder.integrate(requestId);
   if (this.mustStop) { return; } //Emergency stop
@@ -78,9 +78,9 @@ SemanticDealer.prototype.handleData = function(requestId){
   }
 }
 
-SemanticDealer.prototype.nextStep = function(){
+SemanticDealer.prototype.nextStep = function() {
   var self = this;
-  (function recursiveTreeLoop(obj){
+  (function recursiveTreeLoop(obj) {
     for (var key in obj) {
       if (typeof obj[key] == 'object') {
         recursiveTreeLoop(obj[key]);
@@ -101,7 +101,7 @@ SemanticDealer.prototype.nextStep = function(){
   })(self.treeBuilder.content);
 }
 
-SemanticDealer.prototype.match = function(dataToMatch){
+SemanticDealer.prototype.match = function(dataToMatch) {
   var semanticMatching = {
     // %% = placeholder for matched IDs
     '^http:\/\/www\.freebase\.com\/view\/en\/(.{1,})$': 

@@ -2,16 +2,19 @@
 /* Data Fetcher class */
 /**********************/
 
-function DataFetcher(){
-  this.type = 'neutral'; //variable containing the type of data
+function DataFetcher() {
+  this.type = null; //variable containing the type of data
   this.lastRequest = new Date().getTime();
   this.queue = []; //To hold the queue of requests
   this.results = {}; //Object to hold the results of the requests 
-  this.ID = 0; //ID of the setInterval() loop
+  //TODO ID => id
+  this.ID = 0; //id of the setInterval() loop
 }
 
-DataFetcher.prototype.addToQueue = function(source, dataType, accessPath, type){
-  if (!type) { var type = 'default'; }
+DataFetcher.prototype.addToQueue = function(source, dataType, accessPath, type) {
+  if (!type) { 
+    var type = 'default'; 
+  }
   var id = new Date().getTime();
   this.queue.push({
       'id': id,
@@ -24,20 +27,20 @@ DataFetcher.prototype.addToQueue = function(source, dataType, accessPath, type){
   return id;
 }
 
-DataFetcher.prototype.start = function(){
+DataFetcher.prototype.start = function() {
   //If the start() method is invoked, let's begin to fire some request
   var self = this;
   if (this.ID == 0) {
-    this.ID = setInterval(function(){ self.fireNextRequest(); }, 2000);
+    this.ID = setInterval(function() { self.fireNextRequest(); }, 2000);
   }
 }
 
-DataFetcher.prototype.fireNextRequest = function(){
+DataFetcher.prototype.fireNextRequest = function() {
   if (this.queue.length > 0) {
     var nextRequest = this.queue[0];
     if (nextRequest.dataType == 'jsonp') {
       //Set a timeout for the request
-      nextRequest.timeoutId = setTimeout(function(){
+      nextRequest.timeoutId = setTimeout(function() {
         var errorMessage = '<p>';
         errorMessage += 'Seems like one of our requests got lost.';
         errorMessage += 'It was a JSONP one. Sorry.<br/>';
@@ -49,13 +52,13 @@ DataFetcher.prototype.fireNextRequest = function(){
         } else {
           errorManager.print(errorMessage);
         }
-      }, 10000);
+      }, 10000); //TODO in the configuration object
       console.log('Just set the timeoutId #' + nextRequest.timeoutId);
       //And then, fire the request
       this.fireJsonpRequest(nextRequest);
       
     } else if (nextRequest.dataType == 'xml') {
-      nextRequest.timeoutId = setTimeout(function(){
+      nextRequest.timeoutId = setTimeout(function() {
         var errorMessage = '<p>';
         errorMessage += 'Seems like one of our requests got lost.';
         errorMessage += 'It was a XML one. Sorry.<br/>';
@@ -85,13 +88,13 @@ DataFetcher.prototype.fireNextRequest = function(){
   } 
 }
 
-DataFetcher.prototype.fireJsonpRequest = function(request){
+DataFetcher.prototype.fireJsonpRequest = function(request) {
   var self = this;
   $.ajax({
     url: request.source,
     dataType: 'jsonp',
     timeout: 10000,
-    success: function(data){
+    success: function(data) {
       clearTimeout(request.timeoutId);
       self.findAndStore(data, request.accessPath, request.id, request.type);
       console.log('cleared the timeoutId #' + request.timeoutId);
@@ -108,7 +111,7 @@ DataFetcher.prototype.fireJsonpRequest = function(request){
   });
 }
 
-DataFetcher.prototype.fireXmlRequest = function(request){
+DataFetcher.prototype.fireXmlRequest = function(request) {
   var self = this;
   
   //Access-Control-Allow-Origin problem -- Let's use YQL to fetch the data
@@ -141,10 +144,10 @@ DataFetcher.prototype.fireXmlRequest = function(request){
   });
 }
 
-DataFetcher.prototype.findAndStore = function(data, accessPath, requestId, type){
+DataFetcher.prototype.findAndStore = function(data, accessPath, requestId, type) {
   //Stores the useful bits of information in results array
   
-  $.each(accessPath, function(){
+  $.each(accessPath, function() {
     //at each iteration, we go down one level.
     if (data[this]) {
       requestedData = data[this];
