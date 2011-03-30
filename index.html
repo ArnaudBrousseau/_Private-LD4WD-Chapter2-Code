@@ -56,11 +56,12 @@
     
     <script type="text/javascript+protovis">
       //For some reason, the JS can't be external
-      //It has to do with the weird javascript+protovis type and MIME type.
+      //It has to do with the weird javascript+protovis "type" attribute.
       LinkedDataApp.prototype.render = function(data, title, breadth) {
-        if (!breadth) {var breadth = 17;}
-        console.log('Data coming...');
-        console.log(data);
+
+        if (!breadth) {
+          var breadth = 17;
+        }
         var tracks = data.tracks;
         
         var container = document.createElement("span");
@@ -149,7 +150,17 @@
             
         tree.label.add(pv.Label)
           .text(function(n) n.firstChild ? n.nodeName: n.nodeValue )
-          .textMargin(function(n) !n.parentNode ? 70: n.firstChild ? 3: 35)
+          .textMargin(function(n) {
+            if(!n.parentNode) {
+              //Root of the tree
+              return 70;
+            } else if (n.firstChild){
+              return 3;
+            } else {
+              //leaves of the tree
+              return 35;
+            }
+          })
           .font(function(n) {
             if (n.firstChild && n.parentNode){ 
               return "12px Arial, sans-serif";
@@ -159,7 +170,6 @@
           })
           .visible(function(n) n.nodeName != "id" && n.nodeName != "duration")
           .textStyle(function(n){ 
-            //console.log(this.index);
             if(!n.parentNode){ return "#333"; }
             if(!n.firstChild && n.nodeName != "artistName"){return "#333"; }
             return "#999";
@@ -189,16 +199,19 @@
           .fillStyle("transparent")
           .strokeStyle("transparent");
         
-        vis.render();
-        console.log('rendering done');
-        
+        vis.render();        
         document.body.appendChild(container);
+        console.log('rendering done');
 
       }
       
-      LinkedDataApp.prototype.renderGeneric = function(json, rootName, breadth){
-        console.log(json);
-        if(!breadth){var breadth = 20;}
+      LinkedDataApp.prototype.renderGeneric = function(json, 
+                                                       rootName, 
+                                                       breadth) {
+
+        if(!breadth) {
+          var breadth = 20;
+        }
         
         var svgElements = document.getElementsByTagName('svg');
         if(svgElements){
@@ -231,7 +244,6 @@
           .textStyle(function(n) n.firstChild ? "#999" : "#333" );
         
         vis.render();
-        
         document.body.appendChild(container);
         console.log('rendering done');
 

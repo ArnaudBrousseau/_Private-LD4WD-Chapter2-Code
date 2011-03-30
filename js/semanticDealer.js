@@ -9,16 +9,14 @@ function SemanticDealer(filmName, startUrl) {
   this.treeBuilder = new TreeBuilder(filmName, this.dataFetcher);
   this.mustStop = false;
 }
+
 SemanticDealer.prototype.start = function() {
   this.treeBuilder.start(this.startUrl);
 }
+
 SemanticDealer.prototype.stop = function() {
   this.treeBuilder.stop();
   this.mustStop = true;
-}
-
-SemanticDealer.prototype.getTracks = function() {
-  
 }
 
 SemanticDealer.prototype.getArtists = function(trackId) {
@@ -38,7 +36,7 @@ SemanticDealer.prototype.getArtists = function(trackId) {
 }
 
 SemanticDealer.prototype.getRelatedArtists = function(artistId) {
-  console.log('Will now retrieve the related artists to the artist #' + artistId);
+  console.log('Will now retrieve the related artists to artist #' + artistId);
   var source = linkedDataApp.config.url.lastFmRelatedArtistsWebService
                +'&mbid=' 
                + artistId 
@@ -116,7 +114,12 @@ SemanticDealer.prototype.match = function(dataToMatch) {
          'release-group link'],
     '^http:\/\/mb-redir\.freebaseapps\.com\/redir\/([0-9a-z-]{1,})$':
         ['http://mm.musicbrainz.org/ws/1/release-group/%%.html?type=xml&inc=releases',
-         'xml', ['query','results','metadata','release-group','release-list','release'],
+         'xml', ['query',
+                 'results',
+                 'metadata',
+                 'release-group',
+                 'release-list',
+                 'release'],
          'release-group'],
     '^([0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12})$':
         ['http://mm.musicbrainz.org/ws/1/release/%%.html?type=xml&inc=tracks+artist',

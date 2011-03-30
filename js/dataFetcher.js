@@ -46,10 +46,12 @@ DataFetcher.prototype.fireNextRequest = function() {
         var errorMessage = '<p>';
         errorMessage += 'Seems like one of our requests got lost.';
         errorMessage += 'It was a JSONP one. Sorry.<br/>';
-        errorMessage += 'Error occured when trying to retrieve a ressource of type ';
+        errorMessage += 'Error occured when trying to '; 
+        errorMessage += 'retrieve a ressource of type ';
         errorMessage += nextRequest.type + ' at address ' + nextRequest.source;
         errorMessage += '</p>';
-        if (nextRequest.type == 'artist' || nextRequest.type == 'related artists') {
+        if (nextRequest.type == 'artist' 
+            || nextRequest.type == 'related artists') {
           linkedDataApp.errorManager.notice(errorMessage);
         } else {
           linkedDataApp.errorManager.print(errorMessage);
@@ -64,10 +66,12 @@ DataFetcher.prototype.fireNextRequest = function() {
         var errorMessage = '<p>';
         errorMessage += 'Seems like one of our requests got lost.';
         errorMessage += 'It was a XML one. Sorry.<br/>';
-        errorMessage += 'Error occured when trying to retrieve a ressource of type ';
+        errorMessage += 'Error occured when trying';
+        errorMessage += ' to retrieve a ressource of type ';
         errorMessage += nextRequest.type + ' at address ' + nextRequest.source;
         errorMessage += '</p>';
-        if (nextRequest.type == 'artist' || nextRequest.type == 'related artists') {
+        if (nextRequest.type == 'artist' 
+            || nextRequest.type == 'related artists') {
           linkedDataApp.errorManager.notice(errorMessage);
         } else {
           linkedDataApp.errorManager.print(errorMessage);
@@ -115,12 +119,15 @@ DataFetcher.prototype.fireJsonpRequest = function(request) {
 
 DataFetcher.prototype.fireXmlRequest = function(request) {
   var self = this;
-  
   //Access-Control-Allow-Origin problem -- Let's use YQL to fetch the data
-  encodedUrl = encodeURIComponent(request.source); //URLencoding is done before the parameter passing
+  
+  //URLencoding is done before the parameter passing
+  encodedUrl = encodeURIComponent(request.source);
   
   //Now, let's build the YQL query
-  var YQLQuery = "select%20*%20from%20xml%20where%20url%3D%22" + encodedUrl + "%22";
+  var YQLQuery = "select%20*%20from%20xml%20where%20url%3D%22" 
+                 + encodedUrl 
+                 + "%22";
   var YQLRestQuery = "http://query.yahooapis.com/v1/public/yql?q=" 
                      + YQLQuery 
                      + "&format=json&diagnostics=true&callback=";
@@ -130,7 +137,7 @@ DataFetcher.prototype.fireXmlRequest = function(request) {
     url: YQLRestQuery,
     dataType: 'json',
     timeout: linkedDataApp.config.ajaxTimeout,
-    success: function(data){
+    success: function(data) {
       clearTimeout(request.timeoutId);
       self.findAndStore(data, request.accessPath, request.id, request.type);
       console.log('cleared the timeoutId #' + request.timeoutId);
@@ -147,8 +154,10 @@ DataFetcher.prototype.fireXmlRequest = function(request) {
   });
 }
 
-DataFetcher.prototype.findAndStore = function(data, accessPath, requestId, type) {
-  //Stores the useful bits of information in results array
+DataFetcher.prototype.findAndStore = function(data, 
+                                              accessPath, 
+                                              requestId, 
+                                              type) {
   
   $.each(accessPath, function() {
     //at each iteration, we go down one level.
@@ -179,7 +188,9 @@ DataFetcher.prototype.findAndStore = function(data, accessPath, requestId, type)
   //And delete the item in the queue
   if (this.queue.length > 1) {
     this.queue.splice(0,1);
-  } else { this.queue = []; }  
+  } else { 
+    this.queue = []; 
+  }  
 
   //trigger of the event to inform interface that new data is ready
   $('body').trigger('dataFetched', requestId);

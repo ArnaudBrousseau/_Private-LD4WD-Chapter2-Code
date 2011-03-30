@@ -158,7 +158,10 @@ $(document).ready(function() {
   $('#closeArtists').live('click',function(e) {
     $('.artists').html('').fadeOut();
     linkedDataApp.clearInterface();
-    linkedDataApp.render(linkedDataApp.dealer.treeBuilder.simpleTree, linkedDataApp.dealer.filmName);
+    linkedDataApp.render(
+      linkedDataApp.dealer.treeBuilder.simpleTree, 
+      linkedDataApp.dealer.filmName
+    );
     return false;
   });
 
@@ -201,7 +204,6 @@ $(document).ready(function() {
         console.log("You selected " + name);
         console.log("Will now try to fetch data about " + url);
       
-        /* TODO: use var and global closure */
         linkedDataApp.dealer = new SemanticDealer(name, url);
         linkedDataApp.errorManager = new ErrorManager(linkedDataApp.dealer);
         linkedDataApp.clearInterface();
